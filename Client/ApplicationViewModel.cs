@@ -77,7 +77,7 @@ namespace Client
 
                         if (editWindow.ShowDialog() == true)
                         {
-
+                            UpdateCustomer();
                         }
                     },
                     (obj) => Customers?.Count > 0 && SelectedCustomer != null));
@@ -86,7 +86,9 @@ namespace Client
 
         public ApplicationViewModel()
         {
-            Task.Run(() => LoadCustomers()).ConfigureAwait(false).GetAwaiter();
+            loader = LoadCustomers;
+
+            loader.Invoke();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -110,6 +112,20 @@ namespace Client
 
                     OnPropertyChanged("Customers");
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        private async void UpdateCustomer()
+        {
+            try
+            {
+                await "https://localhost:7224/api/Customer"
+                    .WithHeader("Authorization", "base YWRtaW46cGFzc3dvcmQ=")
+                    .PutJsonAsync(selectedCustomer);
             }
             catch (Exception ex)
             {
