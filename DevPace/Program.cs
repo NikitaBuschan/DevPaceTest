@@ -1,7 +1,8 @@
-using DevPace.DB;
-using DevPace.Handler;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
+
+using DevPace.DB;
+using DevPace.Handler;
 
 var builder = WebApplication.CreateBuilder(args);
 

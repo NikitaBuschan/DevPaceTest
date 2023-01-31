@@ -1,14 +1,12 @@
-﻿using DevPace.DB.Models;
+﻿using System;
 using Flurl.Http;
-using Microsoft.AspNetCore.Razor.Language;
-using Microsoft.DotNet.Scaffolding.Shared.Messaging;
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
+using System.Net.Http;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
+
+using DevPace.DB.Models;
 
 namespace Client
 {
@@ -30,21 +28,6 @@ namespace Client
 
         public ObservableCollection<Customer>? Customers { get; set; } = null;
 
-        private RelayCommand? addCommand = null;
-        public RelayCommand AddCommand
-        {
-            get
-            {
-                return addCommand ??
-                    (addCommand = new RelayCommand(obj =>
-                    {
-                        Customer customer = new Customer();
-                        Customers?.Insert(0, customer);
-                        SelectedCustomer = customer;
-                    }));
-            }
-        }
-
         private RelayCommand? removeCommand = null;
         public RelayCommand RemoveCommand
         {
@@ -54,12 +37,18 @@ namespace Client
                     (removeCommand = new RelayCommand(obj =>
                     {
                         Customer customer = obj as Customer;
+
                         if (customer != null)
                         {
-                            Customers?.Remove(customer);
+                            // Open confirm window
+                            if (MessageBox.Show($"Delete customer {customer.Name}?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                            {
+                                RemoveCustomer();
+                                Customers?.Remove(customer);
+                            }
                         }
                     },
-                    (obj) => Customers?.Count > 0));
+                    (obj) => Customers?.Count > 0 && SelectedCustomer != null));
             }
         }
 
@@ -102,20 +91,18 @@ namespace Client
 
         private async void LoadCustomers()
         {
-            try
+            if (Customers == null)
             {
-                if (Customers == null)
+                try
                 {
-                    Customers = await "https://localhost:7224/api/Customer"
-                        .WithHeader("Authorization", "base YWRtaW46cGFzc3dvcmQ=")
-                        .GetJsonAsync<ObservableCollection<Customer>>();
+                    Customers = await CreateCustumerRequest().GetJsonAsync<ObservableCollection<Customer>>();
 
                     OnPropertyChanged("Customers");
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
             }
         }
 
@@ -123,14 +110,27 @@ namespace Client
         {
             try
             {
-                await "https://localhost:7224/api/Customer"
-                    .WithHeader("Authorization", "base YWRtaW46cGFzc3dvcmQ=")
-                    .PutJsonAsync(selectedCustomer);
+                await CreateCustumerRequest().PutJsonAsync(selectedCustomer);
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
+
+        private async void RemoveCustomer()
+        {
+            try
+            {
+                await CreateCustumerRequest().SendJsonAsync(new HttpMethod("DELETE"), selectedCustomer);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        private IFlurlRequest CreateCustumerRequest() =>
+            "https://localhost:7224/api/Customer".WithHeader("Authorization", "base YWRtaW46cGFzc3dvcmQ=");
     }
 }

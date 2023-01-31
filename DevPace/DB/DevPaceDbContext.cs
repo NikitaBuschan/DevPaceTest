@@ -1,5 +1,6 @@
-﻿using DevPace.DB.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+
+using DevPace.DB.Models;
 
 namespace DevPace.DB
 {

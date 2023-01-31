@@ -1,8 +1,9 @@
-﻿using DevPace.DB;
-using DevPace.DB.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+
+using DevPace.DB;
+using DevPace.DB.Models;
 
 namespace DevPace.Controllers
 {
@@ -57,7 +58,7 @@ namespace DevPace.Controllers
         [HttpPost]
         public async Task<ActionResult<IEnumerable<Customer>>> Post(Customer customer)
         {
-            var _customer = await _context.FindAsync(typeof(Customer), customer);
+            var _customer = await _context.Customers.FirstOrDefaultAsync(x => x.Id == customer.Id);
 
             if (_customer != null)
             {

@@ -1,10 +1,11 @@
-﻿using DevPace.DB;
-using System.Text;
+﻿using System.Text;
 using System.Security.Claims;
 using System.Net.Http.Headers;
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication;
+
+using DevPace.DB;
 
 namespace DevPace.Handler
 {

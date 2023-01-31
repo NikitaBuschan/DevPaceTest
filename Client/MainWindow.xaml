@@ -24,42 +24,28 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="0.8*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="0.2*" />
         </Grid.RowDefinitions>
 
-        <ListBox x:Name="CustomersList" Grid.Column="0" ItemsSource="{Binding Customers}"
-                 SelectedItem="{Binding SelectedCustomer}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Margin="5">
-                        <TextBlock FontSize="18" Text="{Binding Path=Name}" />
-                        <TextBlock Text="{Binding Path=CompanyName}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <ListView ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}" >
+            <ListView.View>
+                <GridView AllowsColumnReorder="true" ColumnHeaderToolTip="Customer Information">
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Name}" Header="Name" />
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=CompanyName}" Header="Company"  />
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Phone}" Header="Phone" />
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Email}" Header="Email"  />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Command="{Binding AddCommand}">+</Button>
-            <Button Command="{Binding RemoveCommand}"
-                    CommandParameter="{Binding SelectedCustomer}">-</Button>
             <Button Command="{Binding EditCustomerCommand}"
                     CommandParameter="{Binding SelectedCustomer}">Редактировать</Button>
-        </StackPanel>
-
-        <StackPanel Grid.Column="1" DataContext="{Binding SelectedCustomer}">
-            <TextBlock Text="Выбранный элемент" />
-            <TextBlock Text="Имя" />
-            <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBlock Text="Компания" />
-            <TextBlock Text="{Binding CompanyName, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBlock Text="Телефон" />
-            <TextBlock Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBlock Text="Почта" />
-            <TextBlock Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Command="{Binding RemoveCommand}"
+                    CommandParameter="{Binding SelectedCustomer}">Удалить</Button>
         </StackPanel>
     </Grid>
 </Window>
